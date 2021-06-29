@@ -11,7 +11,7 @@ javac -version
 
 ## Set `JAVA_HOME` environment variable
 
-Create a file `/etc/profile.d/jdk_home.sh and add the following:
+Create a file `/etc/profile.d/jdk_home.sh` and add the following:
 
 ```
 export JAVA_HOME=/usr/lib/jvm/deafult-java/bin
