@@ -16,3 +16,10 @@ Create a file `/etc/profile.d/jdk_home.sh` and add the following:
 ```
 export JAVA_HOME=/usr/lib/jvm/deafult-java/bin
 ```
+
+## Step 2: Create Tomcat User
+
+```
+sudo groupadd tomcat
+sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+```
