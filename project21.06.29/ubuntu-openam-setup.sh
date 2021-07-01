@@ -9,41 +9,30 @@
 # /etc/systemd/system/tomcat.service file
 
 warn() { echo "WARNING: $@" >&2; }
+die() { echo "$*" >&2; exit 2; }
+needs_arg() { if [ -z "$OPTARG" ]; then die "No arg for --$OPT option"; fi; }
 
-# usage() { echo "Usage: $0 [-c]: To clean up" }
 
-password_reset() {
-	echo "Password reset"
-}
-GETOPTPARAM=`getopt -l password-reset: -- "$@"`
-
-eval set -- "$GETOPTPARAM"
-
-while true; do
-	case "$1" in
-		--password-reset )
-			password_reset
-			shift
-			;;
-		(--) shift; break ;;
-		(*) break ;;
-	esac
-	shift
+while getopts ab:c:-: OPT; do
+  # support long options: https://stackoverflow.com/a/28466267/519360
+  if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
+    OPT="${OPTARG%%=*}"       # extract long option name
+    OPTARG="${OPTARG#$OPT}"   # extract long option argument (may be empty)
+    OPTARG="${OPTARG#=}"      # if long option argument, remove assigning `=`
+  fi
+  case "$OPT" in
+    password-reset-only )   password_reset=true ;;
+    marine-password )       needs_arg; marine_password="$OPTARG" ;;
+    boot-password )         needs_arg; boot_password="$OPTARG" ;;
+    ??* )                   die "Illegal option --$OPT" ;;  # bad long option
+    ? )                     exit 2 ;;  # bad short option (error reported via getopts)
+  esac
 done
+shift $((OPTIND-1)) # remove parsed options and args from $@ list
 
-cleanup() {
-		echo "DEBUG: echo cleanup()"
-		rm -f /etc/systemd/system/tomcat.service 
-}
-
-while getopts ":p:" o; do
-	case "${o}" in
-			p)
-				cleanup
-				;;
-	esac
-done
-shift "$((OPTIND-1))"
+echo $password_reset
+echo $marine_password
+echo $boot_password
 
 [ -r /etc/systemd/system/tomcat.service ] || {
 		cat > /etc/systemd/system/tomcat.service <<'EOF'
