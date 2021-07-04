@@ -1,0 +1,17 @@
+#!/bin/bash
+
+default_password='!@#$'
+
+while : ; do
+ read -r -s -p "Enter password: " new_password
+ echo
+ read -r -s -p "Confirm password: " confirm_password
+ echo
+				if [[ "$new_password" != "$confirm_password" ]]; then
+					echo "Error: passwords didn't match. Try again."
+				elif [[ "$new_password" == "$default_password" ]]; then
+					echo "Error: This is the default password. Try again."
+				else
+					break
+				fi
+done
